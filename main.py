@@ -37,7 +37,7 @@ def index():
 
 
 player = VLCPlayer(socketio)
-source = YoutubeSource()
+source = YoutubeSource(socketio)
 track_queue = TrackQueue(socketio)
 
 
@@ -47,6 +47,9 @@ def background_download_thread():
         socketio.sleep(1)
         for index, track in enumerate(track_queue.queue):
             if track.download_status == DownloadStatus.QUEUED:
+                track.download_status = DownloadStatus.SEARCHING
+                track_queue.push_queue_state()
+                track = source.fetch_meta(track)
                 track.download_status = DownloadStatus.DOWNLOADING
                 track_queue.push_queue_state()
                 new_status = DownloadStatus.CAPTURED if source.fetch_file(track.source_id) else DownloadStatus.ERROR
@@ -78,8 +81,7 @@ def command(message):
     elif action == "queueclear":
         track_queue.clear_queue()
     elif action == "queueadd":
-        new_track = source.fetch_meta(param)
-        track_queue.add_track(new_track)
+        track_queue.add_track(source.build_track(param))
     elif action == "queueraise":
         track_queue.raise_track(int(param))
     elif action == "queuelower":

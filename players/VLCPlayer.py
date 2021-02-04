@@ -52,6 +52,7 @@ class VLCPlayer(Player):
         ]
 
     def play_next(self, track: Optional[Track]):
+        self.current_track = track
         if track is not None:
             # do something to fetch the source
             self.vlc_player.set_media(self.vlc_instance.media_new("/home/david/PycharmProjects/YoutubeJukebox/test.mp3"))

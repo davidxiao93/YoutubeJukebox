@@ -3,9 +3,9 @@
 Need to look into how to embed youtube dl too
 https://github.com/ytdl-org/youtube-dl/blob/master/README.md#embedding-youtube-dl
 """
-import time
 
 import youtube_dl
+from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
 from sources.source import Source
@@ -13,18 +13,15 @@ from track import Track
 
 
 class YoutubeSource(Source):
-    def fetch_meta(self, source_id: str) -> Track:
-        return Track(
-            source_id="default_source_id" + str(time.time()),
-            title="Default Title",
-            artist="Default Artist",
-            thumbnail="Thumbnail url",
-            length=100,
-            download_status=DownloadStatus.QUEUED
-        )
 
+    def __init__(self, socketio: SocketIO):
+        super().__init__(socketio)
 
-    def fetch_file(self, source_id: str) -> bool:
+    def fetch_meta(self, track: Track) -> Track:
+        self.socketio.sleep(2)
+        return track
+
+    def fetch_file(self, query: str) -> bool:
         """
         Attempts to download the file coresponding to the provided track
         :returns false if not successful
@@ -34,5 +31,5 @@ class YoutubeSource(Source):
                     - have a mp3 cache (limit cache size though)
                     - normalise the mp3
         """
-        print(f"downloaded {source_id}")
+        self.socketio.sleep(10)
         return True

@@ -3,6 +3,7 @@ from enum import Enum
 
 class DownloadStatus(Enum):
     QUEUED = 0
-    DOWNLOADING = 1
-    CAPTURED = 2
-    ERROR = 3
+    SEARCHING = 1
+    DOWNLOADING = 2
+    CAPTURED = 3
+    ERROR = 4
