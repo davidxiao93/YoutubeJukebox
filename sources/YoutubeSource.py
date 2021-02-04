@@ -3,21 +3,19 @@
 Need to look into how to embed youtube dl too
 https://github.com/ytdl-org/youtube-dl/blob/master/README.md#embedding-youtube-dl
 """
+import time
+
 import youtube_dl
 
 from enums.download_status import DownloadStatus
 from sources.source import Source
 from track import Track
 
-"""
-also how to control volume. Via vlc or by system?
-
-"""
 
 class YoutubeSource(Source):
     def fetch_meta(self, source_id: str) -> Track:
         return Track(
-            source_id="default_source_id",
+            source_id="default_source_id" + str(time.time()),
             title="Default Title",
             artist="Default Artist",
             thumbnail="Thumbnail url",

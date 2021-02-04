@@ -1,21 +1,37 @@
-from typing import Dict, Union, Optional
-from players.player import Player
-from track import Track
+from typing import Optional
 
 import vlc
+from flask_socketio import SocketIO
 
+from players.player import Player
+from track import Track
 
 
 class VLCPlayer(Player):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, socketio: SocketIO):
+        super().__init__(socketio)
         self.vlc_instance = vlc.Instance()
         self.vlc_player = self.vlc_instance.media_player_new()
+        self.vlc_event_manager = self.vlc_player.event_manager()
 
         self.muted = False # Don't rely on vlc muted state
         self.last_volume = 50
         self.vlc_player.audio_set_volume(self.last_volume)
+
+
+        def update_now_playing_state(event):
+            self.push_now_playing_state()
+
+        def play_next_track(event):
+            self.socketio.emit("command", {"action": "playnext"})
+
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPlaying, update_now_playing_state)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPaused, update_now_playing_state)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, play_next_track)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerMuted, update_now_playing_state)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerUnmuted, update_now_playing_state)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerAudioVolume, update_now_playing_state)
 
     def playpause(self):
         if self.is_playing():
@@ -28,8 +44,6 @@ class VLCPlayer(Player):
 
     def is_finished(self) -> bool:
         current_state = self.vlc_player.get_state()
-        print(f"current_state, {current_state}")
-        # 6 = Ended, 5 = Stopped
         return current_state in [
             vlc.State(0), # Nothing special
             vlc.State(5), # Stopped
@@ -38,13 +52,10 @@ class VLCPlayer(Player):
         ]
 
     def play_next(self, track: Optional[Track]):
-        self.current_track = track
         if track is not None:
-            print("play next")
             # do something to fetch the source
             self.vlc_player.set_media(self.vlc_instance.media_new("/home/david/PycharmProjects/YoutubeJukebox/test.mp3"))
             self.vlc_player.play()
-            self.current_track = track
 
     def get_track_length(self) -> int:
         return self.vlc_player.get_length()
@@ -71,7 +82,9 @@ class VLCPlayer(Player):
             self.set_volume(self.last_volume)
             self.muted = False
         else:
+            old_volume = self.get_volume()
             self.set_volume(0)
+            self.last_volume = old_volume
             self.muted = True
 
     def is_muted(self) -> bool:

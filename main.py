@@ -15,7 +15,6 @@ Dependencies
 
 """
 
-
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
@@ -29,8 +28,7 @@ async_mode = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# Use None to let application decide which mode to use
-socketio = SocketIO(app, async_mode=None)
+socketio = SocketIO(app, async_mode='threading')
 
 
 @app.route('/')
@@ -38,16 +36,9 @@ def index():
     return render_template('index.html')
 
 
-player = VLCPlayer()
+player = VLCPlayer(socketio)
 source = YoutubeSource()
-track_queue = TrackQueue()
-
-
-def push_now_playing_state():
-    socketio.emit("now_playing", player.build_state())
-
-def push_queue_state():
-    socketio.emit("queue", track_queue.build_state())
+track_queue = TrackQueue(socketio)
 
 
 def background_download_thread():
@@ -57,76 +48,52 @@ def background_download_thread():
         for index, track in enumerate(track_queue.queue):
             if track.download_status == DownloadStatus.QUEUED:
                 track.download_status = DownloadStatus.DOWNLOADING
-                push_queue_state()
+                track_queue.push_queue_state()
                 new_status = DownloadStatus.CAPTURED if source.fetch_file(track.source_id) else DownloadStatus.ERROR
                 track.download_status = new_status
-                push_queue_state()
+                if track.download_status == DownloadStatus.CAPTURED and index == 0 and player.is_finished():
+                    player.play_next(track_queue.get_next_track())
+                track_queue.push_queue_state()
                 break
 
 socketio.start_background_task(background_download_thread)
-
-
-def background_queue_pusher_thread():
-    # moves items from the queue into the player automatically
-    # I would have made vlc player emit an "playnext" event, but the vlc integration has no callback for when something finishes
-    while True:
-        socketio.sleep(1)
-        if not player.is_finished():
-            continue
-        player.play_next(track_queue.get_next_track())
-        push_now_playing_state()
-        push_queue_state()
-
-socketio.start_background_task(background_queue_pusher_thread)
-
 
 @socketio.event
 def command(message):
     action = message["action"]
     param = message["param"] if "param" in message else None
     if action == "getstate":
-        push_now_playing_state()
-        push_queue_state()
+        player.push_now_playing_state()
+        track_queue.push_queue_state()
     elif action == "volup":
         player.vol_increase()
-        push_now_playing_state()
     elif action == "voldown":
         player.vol_decrease()
-        push_now_playing_state()
     elif action == "voltoggle":
         player.vol_mute_toggle()
-        push_now_playing_state()
     elif action == "playtoggle":
         player.playpause()
-        push_now_playing_state()
     elif action == "playnext":
         player.play_next(track_queue.get_next_track())
-        push_now_playing_state()
-        push_queue_state()
     elif action == "queueclear":
         track_queue.clear_queue()
-        push_queue_state()
     elif action == "queueadd":
         new_track = source.fetch_meta(param)
         track_queue.add_track(new_track)
-        push_queue_state()
     elif action == "queueraise":
         track_queue.raise_track(int(param))
-        push_queue_state()
     elif action == "queuelower":
         track_queue.lower_track(int(param))
-        push_queue_state()
     elif action == "queueremove":
         track_queue.remove_track(int(param))
-        push_queue_state()
     else:
         print(f"Unknown action: {action}")
 
 
 @socketio.event
 def connect():
-    push_queue_state()
-    push_now_playing_state()
+    player.push_now_playing_state()
+    track_queue.push_queue_state()
 
 
 @socketio.on('disconnect')
@@ -136,12 +103,3 @@ def test_disconnect():
 
 if __name__ == '__main__':
     socketio.run(app)
-
-
-"""
-playtoggle causes wrong position to be sent?
-
-playnext when queue is empty should do what?
-
-voltoggle doesnt work
-"""

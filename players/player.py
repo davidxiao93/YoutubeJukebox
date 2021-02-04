@@ -1,12 +1,16 @@
 import time
 from typing import Dict, Union, Optional
 
+from flask_socketio import SocketIO
+
 from track import Track
 
 
 class Player:
 
-    current_track: Optional[Track] = None
+    def __init__(self, socketio: SocketIO):
+        self.socketio = socketio
+        self.current_track: Optional[Track] = None
 
     def build_state(self) -> Dict[str, Union[str, int, Dict[str, Union[str, int]]]]:
         return {
@@ -19,6 +23,9 @@ class Player:
             "is_muted": self.is_muted()
         }
 
+    def push_now_playing_state(self):
+        self.socketio.emit("now_playing", self.build_state())
+
     def playpause(self):
         raise NotImplementedError
 
@@ -29,9 +36,6 @@ class Player:
         raise NotImplementedError
 
     def play_next(self, track: Optional[Track]):
-        raise NotImplementedError
-
-    def get_current_track(self) -> Optional[Track]:
         raise NotImplementedError
 
     def get_track_length(self) -> int:
