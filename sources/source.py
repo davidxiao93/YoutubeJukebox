@@ -14,7 +14,6 @@ class Source:
             title="Default Title",
             artist="Default Artist",
             thumbnail="Thumbnail url",
-            length=100,
             download_status=DownloadStatus.QUEUED
         )
 
@@ -25,9 +24,8 @@ class Source:
         raise NotImplementedError
 
 
-    def fetch_file(self, source_id: str) -> bool:
+    def fetch_file(self, source_id: str):
         """
         Attempts to download the file coresponding to the provided track
-        :returns false if not successful
         """
         raise NotImplementedError

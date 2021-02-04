@@ -46,17 +46,34 @@ def background_download_thread():
     while True:
         socketio.sleep(1)
         for index, track in enumerate(track_queue.queue):
+            if index == 0 and track.download_status == DownloadStatus.CAPTURED and player.is_finished():
+                player.play_next(track_queue.get_next_track())
+                break
+
             if track.download_status == DownloadStatus.QUEUED:
                 track.download_status = DownloadStatus.SEARCHING
                 track_queue.push_queue_state()
-                track = source.fetch_meta(track)
-                track.download_status = DownloadStatus.DOWNLOADING
-                track_queue.push_queue_state()
-                new_status = DownloadStatus.CAPTURED if source.fetch_file(track.source_id) else DownloadStatus.ERROR
-                track.download_status = new_status
-                if track.download_status == DownloadStatus.CAPTURED and index == 0 and player.is_finished():
-                    player.play_next(track_queue.get_next_track())
-                track_queue.push_queue_state()
+
+                # Search for the source id
+                try:
+                    track = source.fetch_meta(track)
+                    track.download_status = DownloadStatus.DOWNLOADING
+                    track_queue.push_queue_state()
+                except Exception as e:
+                    track.download_status = DownloadStatus.ERROR
+                    track_queue.push_queue_state()
+                    print(e)
+                    break
+
+                # Try to download the actual file now
+                try:
+                    source.fetch_file(track.source_id)
+                    track.download_status = DownloadStatus.CAPTURED
+                    track_queue.push_queue_state()
+                except Exception as e:
+                    track.download_status = DownloadStatus.ERROR
+                    track_queue.push_queue_state()
+                    print(e)
                 break
 
 socketio.start_background_task(background_download_thread)

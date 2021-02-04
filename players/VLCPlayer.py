@@ -45,17 +45,16 @@ class VLCPlayer(Player):
     def is_finished(self) -> bool:
         current_state = self.vlc_player.get_state()
         return current_state in [
-            vlc.State(0), # Nothing special
-            vlc.State(5), # Stopped
-            vlc.State(6), # Ended
-            vlc.State(7)  # Error
+            vlc.State.NothingSpecial,
+            vlc.State.Stopped,
+            vlc.State.Ended,
+            vlc.State.Error
         ]
 
     def play_next(self, track: Optional[Track]):
         self.current_track = track
         if track is not None:
-            # do something to fetch the source
-            self.vlc_player.set_media(self.vlc_instance.media_new("/home/david/PycharmProjects/YoutubeJukebox/test.mp3"))
+            self.vlc_player.set_media(self.vlc_instance.media_new("download/" + track.source_id + ".mp3"))
             self.vlc_player.play()
 
     def get_track_length(self) -> int:

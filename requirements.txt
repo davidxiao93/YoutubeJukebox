@@ -1,2 +1,4 @@
-Flask==1.1.2
-Flask-SocketIO==5.0.1
+Flask
+Flask-SocketIO
+youtube-search-python
+youtube-dl
