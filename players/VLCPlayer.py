@@ -11,7 +11,7 @@ class VLCPlayer(Player):
 
     def __init__(self, socketio: SocketIO):
         super().__init__(socketio)
-        self.vlc_instance = vlc.Instance("--file-caching 10000")
+        self.vlc_instance = vlc.Instance()
         self.vlc_player = self.vlc_instance.media_player_new()
         self.vlc_event_manager = self.vlc_player.event_manager()
 
@@ -44,6 +44,8 @@ class VLCPlayer(Player):
         return self.vlc_player.is_playing()
 
     def is_finished(self) -> bool:
+        if self.current_track is None:
+            return True
         current_state = self.vlc_player.get_state()
         return current_state in [
             vlc.State.NothingSpecial,
@@ -59,7 +61,7 @@ class VLCPlayer(Player):
             self.vlc_player.play()
         else:
             if self.is_playing():
-                self.vlc_player.stop()
+                self.vlc_player.pause()
             self.push_now_playing_state()
 
     def get_track_length(self) -> int:

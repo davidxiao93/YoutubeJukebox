@@ -13,8 +13,17 @@ class Player:
         self.current_track: Optional[Track] = None
 
     def build_state(self) -> Dict[str, Union[str, int, Dict[str, Union[str, int]]]]:
+        if self.current_track is None:
+            return {
+                "current_track": {},
+                "position": 0,
+                "current_track_length": 0,
+                "is_playing": False,
+                "volume": self.get_volume(),
+                "is_muted": self.is_muted()
+            }
         return {
-            "current_track": self.current_track.build_state() if self.current_track is not None else {},
+            "current_track": self.current_track.build_state(),
             # Position = progress of track if playback is paused. Else, it is the timestamp at which playback started (and leaves the client to render the seek bar)
             "position": self.get_track_progress() if not self.is_playing() else round(time.time() * 1000) - self.get_track_progress(),
             "current_track_length": self.get_track_length(),

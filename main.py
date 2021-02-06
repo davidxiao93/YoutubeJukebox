@@ -17,8 +17,6 @@ and run it once a week
 
 
 """
-from gevent import monkey
-monkey.patch_all()
 
 
 from flask import Flask, render_template
@@ -34,7 +32,7 @@ async_mode = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, async_mode='gevent')
+socketio = SocketIO(app, async_mode='threading')
 
 
 @app.route('/')
