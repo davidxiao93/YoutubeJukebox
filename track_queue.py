@@ -29,7 +29,7 @@ class TrackQueue:
         while len(self.queue) != 0 and next_track.download_status == DownloadStatus.ERROR:
             next_track = self.queue.pop(0)
         self.push_queue_state()
-        if next_track.download_status == DownloadStatus.ERROR:
+        if next_track.download_status != DownloadStatus.CAPTURED:
             return None
         return next_track
 

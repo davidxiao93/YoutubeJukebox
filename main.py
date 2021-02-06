@@ -11,6 +11,9 @@ Dependencies
 - ffmpeg to convert to mp3
 - vlc? to play back mp3
 
+cache can be handled by
+https://stackoverflow.com/questions/11618144/bash-script-to-limit-a-directory-size-by-deleting-files-accessed-last
+and run it once a week
 
 
 """
@@ -44,7 +47,7 @@ track_queue = TrackQueue(socketio)
 def background_download_thread():
     # decides what needs to be downloaded (if any) and then proceeds to download it
     while True:
-        socketio.sleep(1)
+        socketio.sleep(0)
         for index, track in enumerate(track_queue.queue):
             if index == 0 and track.download_status == DownloadStatus.CAPTURED and player.is_finished():
                 player.play_next(track_queue.get_next_track())

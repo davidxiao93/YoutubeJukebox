@@ -1,9 +1,3 @@
-
-"""
-Need to look into how to embed youtube dl too
-https://github.com/ytdl-org/youtube-dl/blob/master/README.md#embedding-youtube-dl
-"""
-
 from pathlib import Path
 
 import youtube_dl
@@ -42,13 +36,7 @@ class YoutubeSource(Source):
 
 
     def fetch_file(self, source_id: str):
-        """
-        TODO: normalise the audio, maybe remove silence at start and end?
-        cache can be handled by
-        https://stackoverflow.com/questions/11618144/bash-script-to-limit-a-directory-size-by-deleting-files-accessed-last
-        and run it once a week
-        """
-        my_file = Path(source_id + ".mp3")
+        my_file = Path("download/" + source_id + ".mp3")
         if my_file.is_file():
             return True
 
@@ -62,9 +50,14 @@ class YoutubeSource(Source):
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
-            # 'postprocessor_args': ''
+            'postprocessor_args': [
+                # Apply loudness normalisation
+                '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11',
+                # Trim silence
+                '-af', 'silenceremove=start_periods=1:start_duration=1:start_threshold=-60dB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=1:start_duration=1:start_threshold=-60dB:detection=peak,aformat=dblp,areverse'
+            ]
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download(['https://www.youtube.com/watch?v=' + youtube_id])
 
-        return True
+

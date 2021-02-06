@@ -11,9 +11,9 @@ class Source:
     def build_track(self, query: str) -> Track:
         return Track(
             source_id=query,
-            title="Default Title",
-            artist="Default Artist",
-            thumbnail="Thumbnail url",
+            title="",
+            artist="",
+            thumbnail="",
             download_status=DownloadStatus.QUEUED
         )
 

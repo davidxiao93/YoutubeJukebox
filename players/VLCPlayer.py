@@ -28,6 +28,7 @@ class VLCPlayer(Player):
 
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPlaying, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPaused, update_now_playing_state)
+        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerStopped, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, play_next_track)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerMuted, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerUnmuted, update_now_playing_state)
@@ -56,6 +57,10 @@ class VLCPlayer(Player):
         if track is not None:
             self.vlc_player.set_media(self.vlc_instance.media_new("download/" + track.source_id + ".mp3"))
             self.vlc_player.play()
+        else:
+            if self.is_playing():
+                self.vlc_player.stop()
+            self.push_now_playing_state()
 
     def get_track_length(self) -> int:
         return self.vlc_player.get_length()
