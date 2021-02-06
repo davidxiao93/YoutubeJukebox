@@ -23,13 +23,9 @@ class VLCPlayer(Player):
         def update_now_playing_state(event):
             self.push_now_playing_state()
 
-        def play_next_track(event):
-            self.socketio.emit("command", {"action": "playnext"})
-
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPlaying, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerPaused, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerStopped, update_now_playing_state)
-        self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, play_next_track)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerMuted, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerUnmuted, update_now_playing_state)
         self.vlc_event_manager.event_attach(vlc.EventType.MediaPlayerAudioVolume, update_now_playing_state)

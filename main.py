@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 
 """
-TODO:
-update script that runs daily to update youtube-dl
-
-Dependencies
-- youtube-dl to download youtube videos (https://askubuntu.com/a/792022)
-    get mp3 whilst downloading least? https://stackoverflow.com/a/64526840
-    youtube-dl -f "bestaudio/best" -ciw -o "%(title)s.%(ext)s" -v --extract-audio --audio-quality 0 --audio-format mp3  https://www.youtube.com/watch?v=c29tZVZpZGVvUGxheWxpc3RQYXJ0
-- ffmpeg to convert to mp3
-- vlc? to play back mp3
-
-cache can be handled by
-https://stackoverflow.com/questions/11618144/bash-script-to-limit-a-directory-size-by-deleting-files-accessed-last
-and run it once a week
-
+TODO: install script
+- Download repo
+- Install python3
+- Install pip3
+- Install requirements.txt
+- Install youtube-dl (https://askubuntu.com/a/792022)
+- Install ffmpeg
+- Install vlc
+- Weekly cronjob to update everything
+- Weekly cronjob to clean cache (https://stackoverflow.com/questions/11618144/bash-script-to-limit-a-directory-size-by-deleting-files-accessed-last)
+- start server on boot
 
 """
 
@@ -48,12 +45,8 @@ track_queue = TrackQueue(socketio)
 def background_download_thread():
     # decides what needs to be downloaded (if any) and then proceeds to download it
     while True:
-        socketio.sleep(0)
+        socketio.sleep(1)
         for index, track in enumerate(track_queue.queue):
-            if index == 0 and track.download_status == DownloadStatus.CAPTURED and player.is_finished():
-                player.play_next(track_queue.get_next_track())
-                break
-
             if track.download_status == DownloadStatus.QUEUED:
                 track.download_status = DownloadStatus.SEARCHING
                 track_queue.push_queue_state()
@@ -69,6 +62,8 @@ def background_download_thread():
                     print(e)
                     break
 
+                socketio.sleep(1)
+
                 # Try to download the actual file now
                 try:
                     source.fetch_file(track.source_id)
@@ -80,7 +75,19 @@ def background_download_thread():
                     print(e)
                 break
 
+def background_queuer_thread():
+    # decides what needs to be downloaded (if any) and then proceeds to download it
+    while True:
+        socketio.sleep(1)
+        if len(track_queue.queue) > 0:
+            track = track_queue.queue[0]
+            if track.download_status == DownloadStatus.CAPTURED and player.is_finished():
+                player.play_next(track_queue.get_next_track())
+        elif player.is_finished():
+            player.play_next(track_queue.get_next_track())
+
 socketio.start_background_task(background_download_thread)
+socketio.start_background_task(background_queuer_thread)
 
 @socketio.event
 def command(message):
