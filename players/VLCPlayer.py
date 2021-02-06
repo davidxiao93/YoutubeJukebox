@@ -11,7 +11,7 @@ class VLCPlayer(Player):
 
     def __init__(self, socketio: SocketIO):
         super().__init__(socketio)
-        self.vlc_instance = vlc.Instance()
+        self.vlc_instance = vlc.Instance("--file-caching 10000")
         self.vlc_player = self.vlc_instance.media_player_new()
         self.vlc_event_manager = self.vlc_player.event_manager()
 

@@ -2,3 +2,5 @@ Flask
 Flask-SocketIO
 youtube-search-python
 youtube-dl
+gevent
+gevent-websocket
