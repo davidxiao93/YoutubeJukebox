@@ -14,6 +14,7 @@ class Source:
             title="",
             artist="",
             thumbnail="",
+            duration=0,
             download_status=DownloadStatus.QUEUED
         )
 

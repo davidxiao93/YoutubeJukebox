@@ -10,7 +10,7 @@ from enums.download_status import DownloadStatus
 from sources.source import Source
 from track import Track
 
-
+from functools import reduce
 
 
 
@@ -30,6 +30,11 @@ class YoutubeSource(Source):
             track.title = result["title"]
             track.artist = result["channel"]["name"]
             track.thumbnail = max(result["thumbnails"], key=lambda t: t["width"] * t["height"])["url"]
+            track.duration = reduce(
+                lambda a, b: 60 * a + b,
+                [int(x) for x in result["duration"].split(":")],
+                0
+            )
             track.download_status = DownloadStatus.DOWNLOADING
             return track
         raise Exception("Failed to search")

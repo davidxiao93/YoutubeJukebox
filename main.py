@@ -8,7 +8,7 @@ TODO: install script
 - Install requirements.txt
 - Install youtube-dl (https://askubuntu.com/a/792022)
 - Install ffmpeg
-- Install vlc
+- Install vlc-bin
 - Weekly cronjob to update everything
 - Weekly cronjob to clean cache (https://stackoverflow.com/questions/11618144/bash-script-to-limit-a-directory-size-by-deleting-files-accessed-last)
 - start server on boot
@@ -29,7 +29,7 @@ async_mode = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app, async_mode='eventlet')
 
 
 @app.route('/')
@@ -75,8 +75,10 @@ def background_download_thread():
                     print(e)
                 break
 
+                # TODO: seeing as ffmpeg processing within youtube dl doesnt seem to behave, maybe make a separate state for ffmpeg processing
+
 def background_queuer_thread():
-    # decides what needs to be downloaded (if any) and then proceeds to download it
+    # pushes new tracks into the player automatically
     while True:
         socketio.sleep(1)
         if len(track_queue.queue) > 0:
@@ -102,10 +104,10 @@ def command(message):
         player.vol_decrease()
     elif action == "voltoggle":
         player.vol_mute_toggle()
-    elif action == "playtoggle":
-        player.playpause()
     elif action == "playnext":
         player.play_next(track_queue.get_next_track())
+    elif action == "stop":
+        player.stop_playing()
     elif action == "queueclear":
         track_queue.clear_queue()
     elif action == "queueadd":
@@ -124,11 +126,6 @@ def command(message):
 def connect():
     player.push_now_playing_state()
     track_queue.push_queue_state()
-
-
-@socketio.on('disconnect')
-def test_disconnect():
-    pass
 
 
 if __name__ == '__main__':
