@@ -16,7 +16,7 @@ TODO: install script
 """
 
 
-from flask import Flask, render_template
+from flask import Flask
 from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
@@ -27,14 +27,16 @@ from track_queue import TrackQueue
 
 async_mode = None
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='static')
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode='eventlet')
+socketio.init_app(app, cors_allowed_origins="*")
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return app.send_static_file('index.html')
 
 
 player = VLCPlayer(socketio)
@@ -98,10 +100,8 @@ def command(message):
     if action == "getstate":
         player.push_now_playing_state()
         track_queue.push_queue_state()
-    elif action == "volup":
-        player.vol_increase()
-    elif action == "voldown":
-        player.vol_decrease()
+    elif action == "volset":
+        player.set_volume(int(param))
     elif action == "voltoggle":
         player.vol_mute_toggle()
     elif action == "playnext":

@@ -43,31 +43,29 @@ class Player(threading.Thread):
     def is_muted(self) -> bool:
         return self.volume_muted
 
-    def vol_increase(self):
-        self.current_volume += 10
+    def set_volume(self, new_volume: int):
+        self.current_volume = new_volume
         if self.current_volume > 100:
             self.current_volume = 100
-        # TODO: set volume
-        self.push_now_playing_state()
-
-    def vol_decrease(self):
-        self.current_volume -= 10
         if self.current_volume < 0:
             self.current_volume = 0
-        # TODO: set volume
+        # TODO: set system volume
+        print("setting volume to", self.current_volume)
         self.push_now_playing_state()
+
 
     def vol_mute_toggle(self):
         self.volume_muted = not self.volume_muted
-        # TODO: set volume muted status
+        # TODO: set system volume muted
+        print("setting volume muted to", self.volume_muted)
         self.push_now_playing_state()
 
     def push_now_playing_state(self):
         self.socketio.emit("now_playing", self.build_state())
 
     def play_next(self, track: Optional[Track]):
-        self.current_track = track
         self.stop_playing()
+        self.current_track = track
         if self.current_track is not None:
             self.start_playing()
 

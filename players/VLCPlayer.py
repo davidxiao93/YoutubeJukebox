@@ -38,9 +38,15 @@ class VLCPlayer(Player):
 
     def stop_playing(self):
         if self.process is not None:
-            os.kill(self.process.pid, signal.SIGTERM)
+            try:
+                os.kill(self.process.pid, signal.SIGTERM)
+            except ProcessLookupError as e:
+                # Do nothing
+                pass
+            except Exception as e:
+                print(e)
             self.process = None
-        self.current_track = None
-        self.push_now_playing_state()
-
+        if self.current_track is not None:
+            self.current_track = None
+            self.push_now_playing_state()
 
