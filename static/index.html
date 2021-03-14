@@ -33,50 +33,53 @@
         <div class="player">
             <!-- controller -->
             <div class="controller-container">
-                <div class="" style="justify-content: center;">
+                <!-- volume slider -->
+                <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card no-shrink">
+                    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect closebutton"
+                            id="volumemute">
+                        <i class="material-icons" v-if="!now_playing.is_muted">volume_off</i>
+                        <i class="material-icons" v-if="now_playing.is_muted">volume_up</i>
+                    </button>
+                    <p class="progresscontainer">
+                        <input class="mdl-slider mdl-js-slider" type="range"
+                               min="0" max="100" tabindex="0" id="volume"
+                               v-model="now_playing.volume"
+                        />
+                    </p>
+                    <h6 id="volume_value">{{ now_playing.volume }}%</h6>
+                </section>
+                <!-- album image and play/pause button -->
+                <div class="cover"
+                    :style="{ 'background-image': 'url(' + now_playing_thumbnail + ')'}"
+                >
+<!--                    <div style="background-image: url(../images/image.gif)">-->
+<!--                        <img id="cover" :src="now_playing_thumbnail"-->
+<!--                         style='object-fit: contain;max-height:100%;max-width:100%'>-->
+<!--                    </div>-->
 
-                    <!-- player -->
-                    <main class="">
-                        <!-- volume slider -->
-                        <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card">
-                            <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect closebutton"
-                                    id="volumemute">
-                                <i class="material-icons" v-if="!now_playing.is_muted">volume_off</i>
-                                <i class="material-icons" v-if="now_playing.is_muted">volume_up</i>
-                            </button>
-                            <p class="progresscontainer">
-                                <input class="mdl-slider mdl-js-slider" type="range"
-                                       min="0" max="100" tabindex="0" id="volume"
-                                       v-model="now_playing.volume"
-                                />
-                            </p>
-                            <h6 id="volume_value">{{ now_playing.volume }}%</h6>
-                        </section>
-                        <!-- album image and play/pause button -->
-                        <section id="cover">
-                            <img id="now_playing_art" :src="now_playing_thumbnail" style='width: 101%; object-fit: contain;max-height:60vh'>
-                            <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored fab"
-                                    id="statebutton">
-                                <i class="material-icons">play_arrow</i>
-                            </button>
-                        </section>
-                        <!-- title and artist-->
-                        <section class="mdl-card mdl-shadow--8dp card textbackground" id="mediainfo">
-                            <h3 id="title" class="textinfo light">{{ now_playing_title }}</h3>
-                            <h4 id="author" class="textinfo light">{{ now_playing_artist }}</h4>
-                        </section>
-
-                        <!-- bottom section with progress bar and time -->
-                        <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card">
-                            <h6 id="progress_time">00:00</h6>
-                            <p class="progresscontainer">
-                                <input class="mdl-slider mdl-js-slider" type="range"
-                                       min="0" max="1" value="1" tabindex="0" id="progress"/>
-                            </p>
-                            <h6 id="duration_time">{{ now_playing_duration }}</h6>
-                        </section>
-                    </main>
                 </div>
+
+<!--                    <button class="mdl-button mdl-js-button mdl-button&#45;&#45;fab mdl-js-ripple-effect mdl-button&#45;&#45;colored fab"-->
+<!--                            id="statebutton">-->
+<!--                        <i class="material-icons">play_arrow</i>-->
+<!--                    </button>-->
+<!--                </section>-->
+                <!-- title and artist-->
+                <section class="mdl-card mdl-shadow--8dp card textbackground no-shrink"
+                         id="mediainfo">
+                    <h3 id="title" class="textinfo light">{{ now_playing_title }}</h3>
+                    <h4 id="author" class="textinfo light">{{ now_playing_artist }}</h4>
+                </section>
+
+                <!-- bottom section with progress bar and time -->
+                <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card no-shrink">
+                    <h6 id="progress_time">00:00</h6>
+                    <p class="progresscontainer">
+                        <input class="mdl-slider mdl-js-slider" type="range"
+                               min="0" max="1" value="1" tabindex="0" id="progress"/>
+                    </p>
+                    <h6 id="duration_time">{{ now_playing_duration }}</h6>
+                </section>
             </div>
         </div>
     </div>
@@ -94,25 +97,36 @@
                     </form>
                 </div>
             </div>
+            <h5 class="displayTitle">Up next</h5>
             <div class="displayRow">
-                <h6 class="displayTitle">Queue</h6>
-                <!-- display new releases -->
-                <div class="grid" id="newGrid">
-                    <div v-for="(track, index) in queue.queue"
-                         :id="index"
-                         class='card-image mdl-card mdl-shadow--2dp grid-item button'
-                         :style='{"background-image": track.thumbnail_url}'>
-                        <div class='mdl-card__title mdl-card--expand'></div>
-                        <div class='mdl-card__supporting-text'>
-                            <span>{{ track.title }}</span>
-                            <br>{{ track.artist }}
+
+                <ul class="mdl-list">
+                    <li class="mdl-list__item mdl-list__item--three-line compress track-row"
+                        v-for="(track, index) in queue.queue">
+                        <div class="mdl-list__item-primary-content compress flex">
+                            <img :src="track.thumbnail_url" style='max-height:100px;max-width:100px;padding-right:16px'>
+                            <div>
+                                <span>{{ track.title }}</span>
+                                <span class="mdl-list__item-text-body compress">{{ track.artist }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div v-if="!queue.queue || queue.queue.length === 0">
-                        No music in queue. Search to add some!
-                    </div>
-                </div>
+                        <span class="mdl-list__item-secondary-content"
+                              style="height:unset"
+                        >
+                        <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>
+                    </span>
+                    </li>
+                    <li class="mdl-list__item mdl-list__item--three-line compress"
+                        v-if="!queue.queue || queue.queue.length === 0">
+                    <span class="mdl-list__item-primary-content compress">
+                        <div>
+                            <span>No music in queue. Search to add some!</span>
+                        </div>
+                    </span>
+                    </li>
+                </ul>
             </div>
+
         </div>
     </div>
 </div>

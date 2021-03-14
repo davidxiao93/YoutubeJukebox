@@ -1,3 +1,9 @@
+function seconds_string(num_seconds) {
+    const minutes = Math.floor(num_seconds/60);
+    const seconds = num_seconds%60;
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
+
 $(function(){
     var socket = io();
     const app = new Vue({
@@ -27,7 +33,7 @@ $(function(){
             },
             now_playing_duration: function() {
                 if (this.now_playing?.current_track?.duration) {
-                    return Math.round(this.now_playing.current_track.duration/60) + ":" + this.now_playing.current_track.duration%60;
+                    return seconds_string(this.now_playing.current_track.duration);
                 }
                 return "--:--";
             }

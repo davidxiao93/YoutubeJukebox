@@ -18,12 +18,18 @@ html, body {
     padding-top: 0px;
 }
 
-@media screen and (max-width: 1024px) {
-    .column {
-        width: 100%;
-        height: fit-content;
-        padding-top: 50px;
-    }
+
+
+.compress {
+    height: fit-content !important;
+}
+
+.flex {
+    display: flex !important;
+}
+
+.no-shrink {
+    flex-shrink: 0 !important;
 }
 
 h6 {
@@ -64,7 +70,10 @@ h6 {
 .controller-container {
     position: relative;
     width: 90%;
+    height: 90%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-image {
@@ -110,10 +119,24 @@ h6 {
     -webkit-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
+
+    height: 100vh;
+    padding-bottom: 0px;
 }
 
 .searchContainer {
-    width: 75%;
+    width: 90%;
+    height: 90%;
+}
+
+.mdl-list {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.track-row {
+    background-color:#e0e0e0;
+    margin: 2px;
 }
 
 /* search bar */
@@ -197,10 +220,14 @@ h6 {
 
 .displayTitle {
     color: #ffffff;
+    margin-top: 20px !important;
+    margin-bottom: 10px !important;
 }
 
 .displayRow {
-    margin: 40px 0;
+    margin: 0px 0;
+    height: calc(90vh - 100px);
+    overflow-y: auto;
 }
 
 .spinner-container {
@@ -216,7 +243,7 @@ h6 {
 }
 
 .textinfo {
-    margin: 0 36px !important;
+    margin: 0px;
 }
 
 .blocker {
@@ -270,6 +297,17 @@ h6 {
         font-size: 1.8vw;
         line-height: normal;
     }
+    .displayRow {
+        height: unset;
+    }
+    .column {
+        width: 100%;
+    }
+
+    .searchUI {
+        height: fit-content !important;
+        padding-bottom: 40px;
+    }
 }
 
 
@@ -284,9 +322,6 @@ h6 {
     .mdl-card__supporting-text span {
         font-size: 1vw;
     }
-    .textinfo {
-        margin: 0 56px !important;
-    }
     .grid {
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: 10vw;
@@ -297,4 +332,5 @@ h6 {
     .player-cell {
         height: 97%; /*bug fix for safari */
     }
+
 }

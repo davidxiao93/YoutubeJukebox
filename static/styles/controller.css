@@ -4,13 +4,12 @@ html, body {
     color: #666666;
     font-weight: 400;
 }
-#cover {
-    -webkit-box-flex: 1;
-    -ms-flex: auto;
-    flex: auto;
-    background-color: #e0e0e0;
-    position: relative;
-    display: inline-table;
+.cover {
+    flex-shrink:0;
+    flex-grow:1;
+    background-size: contain;
+    background-repeat:no-repeat;
+    background-position: center;
 }
 .card {
     min-height: 0;
@@ -27,9 +26,7 @@ html, body {
     color: #FFFFFF;
 }
 .textinfo {
-    margin: 0 56px;
-    max-height: 2.5em;
-    overflow: hidden;
+    margin: 0px;
 }
 .textinfo.light {
     color: #ffffff;
@@ -79,4 +76,11 @@ html, body {
 .volumecard button {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
+}
+
+@media (max-width: 1023px) {
+    .cover {
+        flex-grow: 0;
+    }
+
 }
