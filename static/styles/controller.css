@@ -4,7 +4,7 @@ html, body {
     color: #666666;
     font-weight: 400;
 }
-.cover {
+.desktop-cover {
     flex-shrink:0;
     flex-grow:1;
     background-size: contain;
@@ -12,6 +12,11 @@ html, body {
     background-position: center;
     background-color: #e0e0e0;
 }
+.phone-cover {
+    max-width: 100%;
+}
+
+
 .card {
     min-height: 0;
     padding: 32px 16px;
@@ -80,8 +85,13 @@ html, body {
 }
 
 @media (max-width: 1023px) {
-    .cover {
-        flex-grow: 0;
+    .desktop-cover {
+        display: none;
     }
+}
 
+@media (min-width: 1024px) {
+    .phone-cover {
+        display: none;
+    }
 }

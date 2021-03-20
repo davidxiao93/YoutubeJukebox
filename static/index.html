@@ -47,21 +47,9 @@
                     <h6 id="volume_value">{{ display_volume }}%</h6>
                 </section>
                 <!-- album image and play/pause button -->
-                <div class="cover"
-                    :style="{ 'background-image': 'url(' + now_playing_thumbnail + ')'}"
-                >
-<!--                    <div style="background-image: url(../images/image.gif)">-->
-<!--                        <img id="cover" :src="now_playing_thumbnail"-->
-<!--                         style='object-fit: contain;max-height:100%;max-width:100%'>-->
-<!--                    </div>-->
+                <div class="desktop-cover" :style="{ 'background-image': 'url(' + now_playing_thumbnail + ')'}"></div>
+                <img class="phone-cover" :src="now_playing_thumbnail" style='object-fit: contain;max-width:100%'>
 
-                </div>
-
-<!--                    <button class="mdl-button mdl-js-button mdl-button&#45;&#45;fab mdl-js-ripple-effect mdl-button&#45;&#45;colored fab"-->
-<!--                            id="statebutton">-->
-<!--                        <i class="material-icons">play_arrow</i>-->
-<!--                    </button>-->
-<!--                </section>-->
                 <!-- title and artist-->
                 <section class="mdl-card mdl-shadow--8dp card textbackground no-shrink"
                          id="mediainfo">

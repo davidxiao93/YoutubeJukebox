@@ -58,7 +58,7 @@ html, body {
 
 // Fix broken focus for sliders in firefox
 .mdl-slider.is-upgraded:focus:not(:active)::-moz-range-thumb {
- box-shadow: unset !important;
+    box-shadow: unset !important;
 }
 
 h6 {
@@ -334,6 +334,9 @@ h6 {
     }
     .column {
         width: 100%;
+        height: unset;
+        margin-top: 30px;
+        margin-bottom: 30px;
     }
 
     .searchUI {
@@ -346,7 +349,7 @@ h6 {
 
 /*===*** DESKTOP LAYOUT ***===*/
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
     .mdl-card__supporting-text {
         line-height: 1.2vw;
         font-size: 0.9vw;
