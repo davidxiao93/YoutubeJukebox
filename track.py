@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from enums.download_status import DownloadStatus
 
@@ -17,6 +17,7 @@ class Track:
         self.thumbnail = thumbnail
         self.duration = duration # in seconds
         self.download_status = download_status
+        self.error: Optional[str] = None
 
     def build_state(self) -> Dict[str, Union[str, int]]:
         return {
@@ -25,5 +26,6 @@ class Track:
             "artist": self.artist,
             "thumbnail_url": self.thumbnail,
             "duration": self.duration,
-            "download_status": self.download_status.name
+            "download_status": self.download_status.value,
+            "error_message": "" if not self.error else self.error
         }

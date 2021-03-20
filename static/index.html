@@ -40,13 +40,11 @@
                         <i class="material-icons" v-if="!now_playing.is_muted">volume_off</i>
                         <i class="material-icons" v-if="now_playing.is_muted">volume_up</i>
                     </button>
-                    <p class="progresscontainer">
-                        <input class="mdl-slider mdl-js-slider" type="range"
+                    <input class="mdl-slider mdl-js-slider" type="range"
                                min="0" max="100" tabindex="0" id="volume"
                                v-model="now_playing.volume"
                         />
-                    </p>
-                    <h6 id="volume_value">{{ now_playing.volume }}%</h6>
+                    <h6 id="volume_value">{{ display_volume }}%</h6>
                 </section>
                 <!-- album image and play/pause button -->
                 <div class="cover"
@@ -74,10 +72,8 @@
                 <!-- bottom section with progress bar and time -->
                 <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card no-shrink">
                     <h6 id="progress_time">00:00</h6>
-                    <p class="progresscontainer">
-                        <input class="mdl-slider mdl-js-slider" type="range"
+                    <input class="mdl-slider mdl-js-slider" type="range"
                                min="0" max="1" value="1" tabindex="0" id="progress"/>
-                    </p>
                     <h6 id="duration_time">{{ now_playing_duration }}</h6>
                 </section>
             </div>
@@ -102,19 +98,83 @@
 
                 <ul class="mdl-list">
                     <li class="mdl-list__item mdl-list__item--three-line compress track-row"
+                        style="flex-direction: row"
                         v-for="(track, index) in queue.queue">
-                        <div class="mdl-list__item-primary-content compress flex">
-                            <img :src="track.thumbnail_url" style='max-height:100px;max-width:100px;padding-right:16px'>
-                            <div>
-                                <span>{{ track.title }}</span>
-                                <span class="mdl-list__item-text-body compress">{{ track.artist }}</span>
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.QUEUED" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <div class='spinner-container'>
+                                    <div class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></div>
+                                </div>
+                                <div>
+                                    <span>Queued:</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.source_id }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <span class="mdl-list__item-secondary-content"
-                              style="height:unset"
-                        >
-                        <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>
-                    </span>
+                        </section >
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.SEARCHING" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <div class='spinner-container' style='max-height:100px;max-width:100px;padding-right:16px'>
+                                    <div class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></div>
+                                </div>
+                                <div>
+                                    <span>Searching:</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.source_id }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.DOWNLOADING" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <div class='spinner-container' style='max-height:100px;max-width:100px;padding-right:16px'>
+                                    <div class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></div>
+                                </div>
+                                <div>
+                                    <span>Downloading:</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.title }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.PROCESSING" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <div class='spinner-container' style='max-height:100px;max-width:100px;padding-right:16px'>
+                                    <div class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></div>
+                                </div>
+                                <div>
+                                    <span>Processing:</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.title }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.CAPTURED" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <img :src="track.thumbnail_url" style='max-height:100px;max-width:100px;padding-right:16px'>
+                                <div>
+                                    <span>{{ track.title }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.artist }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section v-if="track.download_status === DOWNLOAD_STATUS.ERROR" class="flex-grow">
+                            <div class="mdl-list__item-primary-content compress flex">
+                                <div class='spinner-container' style='max-height:100px;max-width:100px;padding-right:16px'>
+                                    <div class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></div>
+                                </div>
+                                <div>
+                                    <span>Error:</span>
+                                    <span class="mdl-list__item-text-body text-compress" v-if="track.error">{{ track.error }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Remove entry in queue button -->
+                        <span class="mdl-list__item-secondary-content" class="no-shrink" style="height:unset">
+                            <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>
+                        </span>
                     </li>
                     <li class="mdl-list__item mdl-list__item--three-line compress"
                         v-if="!queue.queue || queue.queue.length === 0">

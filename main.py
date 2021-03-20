@@ -60,6 +60,7 @@ def background_download_thread():
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
+                    track.error = f"Failed to search for {track.source_id}"
                     track_queue.push_queue_state()
                     print(e)
                     break
@@ -73,6 +74,7 @@ def background_download_thread():
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
+                    track.error = f"Failed to download for {track.title}"
                     track_queue.push_queue_state()
                     print(e)
                 break
@@ -95,6 +97,8 @@ socketio.start_background_task(background_queuer_thread)
 
 @socketio.event
 def command(message):
+    # Yes, I'm fully aware that this could have (and perhaps should have) been done as a REST endpoint(s)
+    # but I wanted to play with websockets m'kay
     action = message["action"]
     param = message["param"] if "param" in message else None
     if action == "getstate":

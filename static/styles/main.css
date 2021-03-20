@@ -24,12 +24,41 @@ html, body {
     height: fit-content !important;
 }
 
+.text-compress {
+    height: unset !important;
+}
+
 .flex {
     display: flex !important;
 }
 
+.flex-grow {
+    flex-grow: 1 !important;
+}
+
 .no-shrink {
     flex-shrink: 0 !important;
+}
+
+.mdl-slider__container {
+    flex-grow: 1 !important;
+}
+
+.mdl-slider__background-lower {
+    display: none !important;
+}
+
+.mdl-slider__background-upper {
+    display: none !important;
+}
+
+.mdl-slider__background-flex {
+    background: rgb(158,158,158);
+}
+
+// Fix broken focus for sliders in firefox
+.mdl-slider.is-upgraded:focus:not(:active)::-moz-range-thumb {
+ box-shadow: unset !important;
 }
 
 h6 {
@@ -240,6 +269,9 @@ h6 {
     -webkit-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
+
+    margin-right: 16px;
+    width: 100px;
 }
 
 .textinfo {

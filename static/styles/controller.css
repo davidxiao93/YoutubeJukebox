@@ -10,6 +10,7 @@ html, body {
     background-size: contain;
     background-repeat:no-repeat;
     background-position: center;
+    background-color: #e0e0e0;
 }
 .card {
     min-height: 0;

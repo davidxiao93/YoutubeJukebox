@@ -10,7 +10,15 @@ $(function(){
         el: "#app",
         data: {
             now_playing: {},
-            queue: []
+            queue: [],
+            DOWNLOAD_STATUS: {
+                QUEUED: 0,
+                SEARCHING: 1,
+                DOWNLOADING: 2,
+                PROCESSING: 3,
+                CAPTURED: 4,
+                ERROR: 5
+            }
         },
         computed: {
             now_playing_thumbnail: function() {
@@ -36,9 +44,19 @@ $(function(){
                     return seconds_string(this.now_playing.current_track.duration);
                 }
                 return "--:--";
+            },
+            display_volume: function() {
+                return String(this.now_playing.volume).padStart(3, '0');
             }
+        },
+        updated() {
+            // Get mdl magic upgrade thingy to work!
+            this.$nextTick(() => {
+                componentHandler.upgradeDom();
+                componentHandler.upgradeAllRegistered();
+            });
         }
-    })
+    });
 
     socket.on('now_playing', function(msg, cb) {
         app.now_playing = msg;
