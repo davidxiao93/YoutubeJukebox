@@ -49,6 +49,21 @@ $(function(){
                 return String(this.now_playing.volume).padStart(3, '0');
             }
         },
+        methods: {
+            onSearch: function(event) {
+                var query = event.target.elements.inputText.value;
+                socket.emit('command', {action: 'queueadd', param: query});
+            },
+            onVolMute: function() {
+                socket.emit('command', {action: 'voltoggle'});
+            },
+            onVolChange: function() {
+                socket.emit('command', {action: 'volset', param: this.now_playing.volume});
+            },
+            onRemoveTrack: function(index) {
+                socket.emit('command', {action: 'queueremove', param: index})
+            }
+        },
         updated() {
             // Get mdl magic upgrade thingy to work!
             this.$nextTick(() => {
@@ -66,23 +81,7 @@ $(function(){
         app.queue = msg;
     });
 
-    // New Search
-    $('form').on('submit', function(event) {
-        event.preventDefault(); //prevent page from reloading
-        var val = $('#inputText').val(); //get the text from the input
-        socket.emit('command', {action: 'queueadd', param: val});
-        $('#inputText').val('');
-    });
-
-    // Mute
-    $('#volumemute').on('click',function(){
-        socket.emit('command', {action: 'voltoggle'});
-    });
-    // User changed volume
-    $('#volume').on('input', function(event) {
-        socket.emit('command', {action: 'volset', param: event.target.value});
-    });
-    // user is seeking
+    // user is seeking, TODO move to vue
     $('#progress').on('input', function(event){
         $('#time').html(convertToTime(event.target.value));
         seek(event.target.value);

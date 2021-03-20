@@ -36,13 +36,15 @@
                 <!-- volume slider -->
                 <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card no-shrink">
                     <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect closebutton"
-                            id="volumemute">
+                            @click="onVolMute"
+                            >
                         <i class="material-icons" v-if="!now_playing.is_muted">volume_off</i>
                         <i class="material-icons" v-if="now_playing.is_muted">volume_up</i>
                     </button>
                     <input class="mdl-slider mdl-js-slider" type="range"
                                min="0" max="100" tabindex="0" id="volume"
                                v-model="now_playing.volume"
+                               @change="onVolChange"
                         />
                     <h6 id="volume_value">{{ display_volume }}%</h6>
                 </section>
@@ -72,7 +74,7 @@
             <div>
                 <!-- search bar -->
                 <div class="searchBar">
-                    <form>
+                    <form @submit.prevent="onSearch">
                         <input type="text" id="inputText" placeholder="Search Youtube" autocomplete="off" required>
                         <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
                                 id="searchbutton">
@@ -161,7 +163,13 @@
 
                         <!-- Remove entry in queue button -->
                         <span class="mdl-list__item-secondary-content" class="no-shrink" style="height:unset">
-                            <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>
+                            <button class="delete mdl-button mdl-js-button mdl-button--icon mdl-button--colored mdl-list__item-secondary-action"
+                               @click="onRemoveTrack(index)"
+                            >
+                                <i class="material-icons">
+                                    delete_forever
+                                </i>
+                            </button>
                         </span>
                     </li>
                     <li class="mdl-list__item mdl-list__item--three-line compress"

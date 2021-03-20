@@ -56,9 +56,8 @@ html, body {
     background: rgb(158,158,158);
 }
 
-// Fix broken focus for sliders in firefox
-.mdl-slider.is-upgraded:focus:not(:active)::-moz-range-thumb {
-    box-shadow: unset !important;
+.delete {
+    color: red !important;
 }
 
 h6 {
