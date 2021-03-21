@@ -1,7 +1,7 @@
 function seconds_string(num_seconds) {
     const minutes = Math.floor(num_seconds/60);
     const seconds = num_seconds%60;
-    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    return minutes + ":" + String(seconds).padStart(2, '0');
 }
 
 $(function(){
@@ -40,6 +40,12 @@ $(function(){
                 }
                 return "--";
             },
+            now_playing_progress: function() {
+                if (this.now_playing.is_playing) {
+                    return seconds_string(this.progress);
+                }
+                return "--:--";
+            },
             now_playing_duration: function() {
                 if (this.now_playing?.current_track?.duration) {
                     return seconds_string(this.now_playing.current_track.duration);
@@ -60,6 +66,7 @@ $(function(){
             onSearch: function(event) {
                 var query = event.target.elements.inputText.value;
                 socket.emit('command', {action: 'queueadd', param: query});
+                event.target.reset(); // Clear the form
             },
             onVolMute: function() {
                 socket.emit('command', {action: 'voltoggle'});

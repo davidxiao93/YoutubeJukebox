@@ -61,7 +61,7 @@
 
                 <!-- bottom section with progress bar and time -->
                 <section class="mdl-card mdl-shadow--8dp mdl-layout__header-row card no-shrink">
-                    <h6 id="progress_time">00:00</h6>
+                    <h6 id="progress_time">{{ now_playing_progress }}</h6>
                     <input class="mdl-slider mdl-js-slider" type="range"
                            min="0" :max="progress_bar_max" value="1" tabindex="0" id="progress"
                            v-model="progress"
