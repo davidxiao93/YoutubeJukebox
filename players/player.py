@@ -65,11 +65,17 @@ class Player(threading.Thread):
 
     def play_next(self, track: Optional[Track]):
         self.stop_playing()
+        self.clear_track()
         self.current_track = track
         if self.current_track is not None:
-            self.start_playing()
+            self.seek_to(0)
 
-    def start_playing(self):
+    def clear_track(self):
+        if self.current_track is not None:
+            self.current_track = None
+            self.push_now_playing_state()
+
+    def seek_to(self, start: int):
         raise NotImplementedError
 
     def stop_playing(self):

@@ -25,15 +25,20 @@ class VLCPlayer(Player):
             return True
         return self.process.poll() is not None
 
-    def start_playing(self):
-        if self.current_track is not None:
-            self.current_track_started = int(time.time())
+    def seek_to(self, start: int):
+        if self.current_track is None:
+            self.stop_playing()
+            self.clear_track()
+        else:
+            if self.is_playing():
+                self.stop_playing()
+            self.current_track_started = int(time.time()) - start
             self.process = subprocess.Popen([
-                "cvlc", "-f", "--no-osd", "--play-and-exit",
+                "cvlc",
+                "--start-time", str(start), # Start at a specific time
+                "--play-and-exit",          # Close process when finished
                 "download/" + self.current_track.source_id + ".mp3"
             ])
-        else:
-            self.stop_playing()
         self.push_now_playing_state()
 
     def stop_playing(self):
@@ -46,7 +51,4 @@ class VLCPlayer(Player):
             except Exception as e:
                 print(e)
             self.process = None
-        if self.current_track is not None:
-            self.current_track = None
-            self.push_now_playing_state()
 

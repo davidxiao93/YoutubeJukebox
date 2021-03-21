@@ -105,22 +105,30 @@ def command(message):
         player.push_now_playing_state()
         track_queue.push_queue_state()
     elif action == "volset":
+        # param is expected to be a value between 0 and 100 inclusive
         player.set_volume(int(param))
     elif action == "voltoggle":
         player.vol_mute_toggle()
     elif action == "playnext":
         player.play_next(track_queue.get_next_track())
+    elif action == "playseek":
+        # param is expected to be seek position in whole seconds
+        player.seek_to(int(param))
     elif action == "stop":
         player.stop_playing()
     elif action == "queueclear":
         track_queue.clear_queue()
     elif action == "queueadd":
+        # param is expected to be the desired search query
         track_queue.add_track(source.build_track(param))
     elif action == "queueraise":
+        # param is expected to be the index of the track to move up
         track_queue.raise_track(int(param))
     elif action == "queuelower":
+        # param is expected to be the index of the track to move down
         track_queue.lower_track(int(param))
     elif action == "queueremove":
+        # param is expected to be the index of the track to remove
         track_queue.remove_track(int(param))
     else:
         print(f"Unknown action: {action}")

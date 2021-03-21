@@ -11,6 +11,7 @@ $(function(){
         data: {
             now_playing: {},
             queue: [],
+            progress: 0,
             DOWNLOAD_STATUS: {
                 QUEUED: 0,
                 SEARCHING: 1,
@@ -47,6 +48,12 @@ $(function(){
             },
             display_volume: function() {
                 return String(this.now_playing.volume).padStart(3, '0');
+            },
+            progress_bar_max: function() {
+                if (this.now_playing?.current_track?.duration) {
+                    return this.now_playing.current_track.duration;
+                }
+                return 1;
             }
         },
         methods: {
@@ -62,6 +69,9 @@ $(function(){
             },
             onRemoveTrack: function(index) {
                 socket.emit('command', {action: 'queueremove', param: index})
+            },
+            onSeek: function() {
+                socket.emit('command', {action: 'playseek', param: this.progress})
             }
         },
         updated() {
@@ -70,11 +80,22 @@ $(function(){
                 componentHandler.upgradeDom();
                 componentHandler.upgradeAllRegistered();
             });
+        },
+        mounted: function() {
+            window.setInterval(() => {
+                this.progress = Math.min(this.progress_bar_max, parseInt(this.progress) + 1);
+            }, 1000);
         }
     });
 
     socket.on('now_playing', function(msg, cb) {
         app.now_playing = msg;
+        if (app.now_playing.is_playing) {
+            const expected_progress = Math.round(Date.now() / 1000) - app.now_playing.started;
+            if (app.progress !== expected_progress) {
+                app.progress = expected_progress;
+            }
+        }
     });
 
     socket.on('queue', function(msg, cb) {
@@ -82,10 +103,10 @@ $(function(){
     });
 
     // user is seeking, TODO move to vue
-    $('#progress').on('input', function(event){
-        $('#time').html(convertToTime(event.target.value));
-        seek(event.target.value);
-    });
+//    $('#progress').on('input', function(event){
+//        $('#time').html(convertToTime(event.target.value));
+//        seek(event.target.value);
+//    });
     
 });
 
