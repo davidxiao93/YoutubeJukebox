@@ -49,16 +49,18 @@
                     <h6 id="volume_value">{{ display_volume }}%</h6>
                 </section>
                 <!-- album image and play/pause button -->
-                <div class="desktop-cover" :style="{ 'background-image': 'url(' + now_playing_thumbnail + ')'}"></div>
-                <img class="phone-cover" :src="now_playing_thumbnail" style='object-fit: contain;max-width:100%'>
+                <section style="display:flex; flex-grow:1; position:relative">
+                    <div class="desktop-cover" :style="{ 'background-image': 'url(' + now_playing_thumbnail + ')'}"></div>
+                    <img class="phone-cover" :src="now_playing_thumbnail" style='object-fit: contain;max-width:100%'>
+                    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored fab"
+                            @click="onPlayNext"
+                    >
+                        <i class="material-icons">skip_next</i>
+                    </button>
+                </section>
 
 
-                <!-- TODO: Work out where I want the play next button -->
-<!--                <section>-->
-<!--                    <button class="mdl-button mdl-js-button mdl-button&#45;&#45;fab mdl-js-ripple-effect mdl-button&#45;&#45;colored fab" id="statebutton">-->
-<!--                        <i class="material-icons">play_arrow</i>-->
-<!--                    </button>-->
-<!--                </section>-->
+
                 <!-- title and artist-->
                 <section class="mdl-card mdl-shadow--8dp card textbackground no-shrink"
                          id="mediainfo">
