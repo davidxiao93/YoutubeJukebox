@@ -35,6 +35,7 @@ class VLCPlayer(Player):
             self.current_track_started = int(time.time()) - start
             self.process = subprocess.Popen([
                 "cvlc",
+                "-q",                       # Shut it up
                 "--start-time", str(start), # Start at a specific time
                 "--play-and-exit",          # Close process when finished
                 "download/" + self.current_track.source_id + ".mp3"

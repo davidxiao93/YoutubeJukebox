@@ -18,13 +18,14 @@ html, body {
     padding-top: 0px;
 }
 
-// Override the is-lowest-value behaviour on the sliders
-.mdl-slider.is-upgraded.is-lowest-value::-webkit-slider-thumb {
+/* Override the thumb for the sliders in firefox */
+.mdl-slider.is-upgraded::-webkit-slider-thumb {
     border: 2px solid rgb(158,158,158) !important;
     background: rgb(158,158,158) !important;
 }
 
-.mdl-slider.is-upgraded.is-lowest-value::-moz-range-thumb {
+/* Override the thumb for the sliders in chrome */
+.mdl-slider.is-upgraded::-moz-range-thumb {
     border: 2px solid rgb(158,158,158) !important;
     background: rgb(158,158,158) !important;
 }
