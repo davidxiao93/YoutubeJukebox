@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import youtube_dl
@@ -53,29 +54,31 @@ class YoutubeSource(Source):
         raise Exception("Failed to search")
 
 
-    def fetch_file(self, source_id: str):
+    def fetch_file(self, source_id: str) -> bool:
+        """
+        Returns True if the file is cached
+        """
         my_file = Path("download/" + source_id + ".mp3")
         if my_file.is_file():
             return True
 
+        temp_file = Path("download/temp")
+        if temp_file.is_file():
+            try:
+                os.remove("download/temp")
+            except:
+                raise Exception("failed to delete temp file")
+
         youtube_id = source_id.replace("youtube_", "")
 
         ydl_opts = {
+            # If there are any audio-only tracks, then youtube-dl will pick the best of them
+            # Else, it will take the best track with video and audio
             'format': 'bestaudio/best',
-            'outtmpl': 'download/youtube_%(id)s.%(ext)s',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'postprocessor_args': [
-                # Apply loudness normalisation
-                '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11',
-                # Trim silence
-                '-af', 'silenceremove=start_periods=1:start_duration=1:start_threshold=-60dB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=1:start_duration=1:start_threshold=-60dB:detection=peak,aformat=dblp,areverse'
-            ]
+            'outtmpl': 'download/temp'
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download(['https://www.youtube.com/watch?v=' + youtube_id])
 
+        return False
 

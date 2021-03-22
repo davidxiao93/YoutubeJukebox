@@ -69,17 +69,29 @@ def background_download_thread():
 
                 # Try to download the actual file now
                 try:
-                    source.fetch_file(track.source_id)
-                    track.download_status = DownloadStatus.CAPTURED
+                    cached = source.fetch_file(track.source_id)
+                    track.download_status = DownloadStatus.CAPTURED if cached else DownloadStatus.PROCESSING
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
                     track.error = f"Failed to download for {track.title}, reason: {e}"
                     track_queue.push_queue_state()
                     print(e)
-                break
+                    break
 
-                # TODO: seeing as ffmpeg processing within youtube dl doesnt seem to behave, maybe make a separate state for ffmpeg processing
+                if track.download_status == DownloadStatus.PROCESSING:
+                    # Now try to do some post processing
+                    try:
+                        source.process_file(track)
+                        track.download_status = DownloadStatus.CAPTURED
+                        track_queue.push_queue_state()
+                    except Exception as e:
+                        track.download_status = DownloadStatus.ERROR
+                        track.error = f"Failed to download for {track.title}, reason: {e}"
+                        track_queue.push_queue_state()
+                        print(e)
+                        break
+
 
 def background_queuer_thread():
     # pushes new tracks into the player automatically

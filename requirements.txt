@@ -3,3 +3,4 @@ Flask-SocketIO
 youtube-search-python
 youtube-dl
 eventlet
+ffmpeg-python
