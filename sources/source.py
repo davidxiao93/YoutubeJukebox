@@ -131,7 +131,6 @@ class Source:
 
         output_ffmpeg = ffmpeg.output(input_audio, filename=f"download/{track.source_id}.mp3")
         output_ffmpeg = ffmpeg.overwrite_output(output_ffmpeg) # overwrite if needed
-        print(ffmpeg.compile(output_ffmpeg))
 
 
         def run_ffmpeg(output):

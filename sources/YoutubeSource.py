@@ -75,7 +75,8 @@ class YoutubeSource(Source):
             # If there are any audio-only tracks, then youtube-dl will pick the best of them
             # Else, it will take the best track with video and audio
             'format': 'bestaudio/best',
-            'outtmpl': 'download/temp'
+            'outtmpl': 'download/temp',
+            'quiet': True
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download(['https://www.youtube.com/watch?v=' + youtube_id])
