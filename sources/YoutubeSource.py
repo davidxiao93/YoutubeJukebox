@@ -20,9 +20,20 @@ class YoutubeSource(Source):
         super().__init__(socketio)
 
     def fetch_meta(self, track: Track) -> Track:
-        # TODO: should probably cache search results too
-        videosSearch = VideosSearch(track.source_id, limit=1)
-        results = videosSearch.result()["result"]
+        query = track.source_id
+
+        maybe_track = self.check_cache(query)
+        if maybe_track is not None:
+            track.source_id = maybe_track.source_id
+            track.title = maybe_track.title
+            track.artist = maybe_track.artist
+            track.thumbnail = maybe_track.thumbnail
+            track.duration = maybe_track.duration
+            track.download_status = DownloadStatus.DOWNLOADING
+            return track
+
+        youtube_search = VideosSearch(query, limit=1)
+        results = youtube_search.result()["result"]
         if len(results) == 0:
             raise Exception("No results")
         result = results[0]
@@ -37,6 +48,7 @@ class YoutubeSource(Source):
                 0
             )
             track.download_status = DownloadStatus.DOWNLOADING
+            self.add_to_cache(query, track)
             return track
         raise Exception("Failed to search")
 

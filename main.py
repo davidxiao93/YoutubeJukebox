@@ -60,7 +60,7 @@ def background_download_thread():
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
-                    track.error = f"Failed to search for {track.source_id}"
+                    track.error = f"Failed to search for {track.source_id}, reason: {e}"
                     track_queue.push_queue_state()
                     print(e)
                     break
@@ -74,7 +74,7 @@ def background_download_thread():
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
-                    track.error = f"Failed to download for {track.title}"
+                    track.error = f"Failed to download for {track.title}, reason: {e}"
                     track_queue.push_queue_state()
                     print(e)
                 break

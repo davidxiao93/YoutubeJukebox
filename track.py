@@ -16,6 +16,8 @@ class Track:
         self.artist = artist
         self.thumbnail = thumbnail
         self.duration = duration # in seconds
+
+        # The fields below are not kept in cache
         self.download_status = download_status
         self.error: Optional[str] = None
 
@@ -27,5 +29,5 @@ class Track:
             "thumbnail_url": self.thumbnail,
             "duration": self.duration,
             "download_status": self.download_status.value,
-            "error_message": "" if not self.error else self.error
+            "error": "" if not self.error else self.error
         }
