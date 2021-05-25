@@ -1,5 +1,6 @@
 from flask_socketio import SocketIO
 
+from favourites.favourites import Favourites
 from players.player import Player
 
 import os
@@ -12,8 +13,8 @@ from eventlet.green import subprocess
 
 class VLCPlayer(Player):
 
-    def __init__(self, socketio: SocketIO):
-        super().__init__(socketio)
+    def __init__(self, socketio: SocketIO, favourites: Favourites):
+        super().__init__(socketio, favourites)
 
     def is_playing(self) -> bool:
         if self.process is None:

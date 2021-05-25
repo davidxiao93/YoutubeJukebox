@@ -3,18 +3,22 @@ from typing import List, Dict, Optional, Union
 from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
+from favourites.favourites import Favourites
 from track.track import Track
 
 
 class TrackQueue:
-    def __init__(self, socketio: SocketIO):
+    def __init__(self, socketio: SocketIO, favourites: Favourites):
         self.socketio = socketio
+        self.favourites = favourites
         self.queue: List[Track] = []
 
     def build_state(self) -> Dict[str, List[Dict[str, Union[str, int]]]]:
         return {
             "queue": [
-                track.build_state()
+                track.build_state(
+                    is_favourite=self.favourites.is_favourite(track)
+                )
                 for track in self.queue
             ]
         }
@@ -41,6 +45,11 @@ class TrackQueue:
         if 0 <= index < len(self.queue):
             self.queue.pop(index)
             self.push_queue_state()
+
+    def get_track_at(self, index: int) -> Optional[Track]:
+        if 0 <= index < len(self.queue):
+            return self.queue[index]
+        return None
 
     def clear_queue(self):
         self.queue = []

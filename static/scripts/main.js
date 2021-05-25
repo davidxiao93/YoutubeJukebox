@@ -11,6 +11,7 @@ $(function(){
         data: {
             now_playing: {},
             queue: [],
+            favourites: [],
             progress: 0,
             DOWNLOAD_STATUS: {
                 QUEUED: 0,
@@ -74,14 +75,24 @@ $(function(){
             onVolChange: function() {
                 socket.emit('command', {action: 'volset', param: this.now_playing.volume});
             },
-            onRemoveTrack: function(index) {
-                socket.emit('command', {action: 'queueremove', param: index})
+            onRemoveTrack: function(queue_index) {
+                socket.emit('command', {action: 'queueremove', param: queue_index})
             },
             onSeek: function() {
                 socket.emit('command', {action: 'playseek', param: this.progress})
             },
             onPlayNext: function() {
                 socket.emit('command', {action: 'playnext'})
+            },
+            onToggleFavourite: function(track, queue_index) {
+                if (!track.is_favourite) {
+                    socket.emit('command', {action: 'favouriteadd', param: queue_index})
+                } else {
+                    socket.emit('command', {action: 'favouriteremove', param: queue_index})
+                }
+            },
+            onDeleteFavourite: function(favourite_source_id) {
+                socket.emit('command', {action: 'favouritedelete', param: favourite_source_id})
             }
         },
         updated() {
@@ -110,6 +121,10 @@ $(function(){
 
     socket.on('queue', function(msg, cb) {
         app.queue = msg;
+    });
+
+    socket.on('favourites', function(msg, cb) {
+        app.favourites = msg;
     });
     
 });

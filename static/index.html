@@ -175,6 +175,13 @@
 
                         <!-- Remove entry in queue button -->
                         <span class="mdl-list__item-secondary-content" class="no-shrink" style="height:unset">
+                            <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect closebutton"
+                                @click="onToggleFavourite(track, index)"
+                            >
+                                <i class="material-icons" v-if="track.is_favourite">star</i>
+                                <i class="material-icons" v-if="!track.is_favourite">star_border</i>
+                            </button>
+
                             <button class="delete mdl-button mdl-js-button mdl-button--icon mdl-button--colored mdl-list__item-secondary-action"
                                @click="onRemoveTrack(index)"
                             >

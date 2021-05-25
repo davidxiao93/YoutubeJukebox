@@ -14,14 +14,16 @@ TODO: install script
 - start server on boot
 
 """
-
+from typing import Optional
 
 from flask import Flask
 from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
+from favourites.favourites import Favourites
 from players.VLCPlayer import VLCPlayer
 from sources.YoutubeSource import YoutubeSource
+from track.track import Track
 from track.track_queue import TrackQueue
 
 
@@ -38,10 +40,10 @@ socketio.init_app(app, cors_allowed_origins="*")
 def index():
     return app.send_static_file('index.html')
 
-
-player = VLCPlayer(socketio)
+favourites = Favourites(socketio)
+player = VLCPlayer(socketio, favourites)
 source = YoutubeSource(socketio)
-track_queue = TrackQueue(socketio)
+track_queue = TrackQueue(socketio, favourites)
 
 
 def background_download_thread():
@@ -116,6 +118,7 @@ def command(message):
     if action == "getstate":
         player.push_now_playing_state()
         track_queue.push_queue_state()
+        favourites.push_favourites_state()
     elif action == "volset":
         # param is expected to be a value between 0 and 100 inclusive
         player.set_volume(int(param))
@@ -142,6 +145,24 @@ def command(message):
     elif action == "queueremove":
         # param is expected to be the index of the track to remove
         track_queue.remove_track(int(param))
+    elif action == "favouriteadd" or action == "favouriteremove":
+        index = int(param)
+        maybe_track: Optional[Track]
+        if index < 0:
+            maybe_track = player.current_track
+        else:
+            maybe_track = track_queue.get_track_at(index)
+        if maybe_track:
+            if action == "favouriteadd":
+                favourites.add_favourite(maybe_track.info)
+            else:
+                favourites.remove_favourite(maybe_track.info)
+            player.push_now_playing_state()
+            track_queue.push_queue_state()
+    elif action == "favouritedelete":
+        favourites.delete_favourite(param)
+        player.push_now_playing_state()
+        track_queue.push_queue_state()
     else:
         print(f"Unknown action: {action}")
 
@@ -150,6 +171,7 @@ def command(message):
 def connect():
     player.push_now_playing_state()
     track_queue.push_queue_state()
+    favourites.push_favourites_state()
 
 
 if __name__ == '__main__':

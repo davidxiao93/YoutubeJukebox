@@ -2,16 +2,18 @@ from typing import Dict, Union, Optional
 
 from flask_socketio import SocketIO
 
+from favourites.favourites import Favourites
 from track.track import Track
 
 import threading
 
 class Player(threading.Thread):
 
-    def __init__(self, socketio: SocketIO):
+    def __init__(self, socketio: SocketIO, favourites: Favourites):
         super().__init__()
         self.process = None
         self.socketio = socketio
+        self.favourites = favourites
         self.current_track: Optional[Track] = None
         self.current_track_started = 0
 
@@ -29,7 +31,9 @@ class Player(threading.Thread):
                 "is_muted": self.is_muted()
             }
         return {
-            "current_track": self.current_track.build_state(),
+            "current_track": self.current_track.build_state(
+                is_favourite=self.favourites.is_favourite(self.current_track)
+            ),
             "started": self.current_track_started, # unix timestamp in seconds
             "is_playing": self.is_playing(),
             "volume": self.get_volume(),
