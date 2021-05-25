@@ -38,8 +38,8 @@
                     <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect closebutton"
                             @click="onVolMute"
                             >
-                        <i class="material-icons" v-if="!now_playing.is_muted">volume_off</i>
-                        <i class="material-icons" v-if="now_playing.is_muted">volume_up</i>
+                        <i class="material-icons" v-if="now_playing.is_muted">volume_off</i>
+                        <i class="material-icons" v-if="!now_playing.is_muted">volume_up</i>
                     </button>
                     <input class="mdl-slider mdl-js-slider" type="range"
                                min="0" max="100" tabindex="0" id="volume"

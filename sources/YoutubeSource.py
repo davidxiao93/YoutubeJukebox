@@ -9,7 +9,7 @@ from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
 from sources.source import Source
-from track import Track
+from track.track import Track
 
 from functools import reduce
 

@@ -3,7 +3,7 @@ from typing import List, Dict, Optional, Union
 from flask_socketio import SocketIO
 
 from enums.download_status import DownloadStatus
-from track import Track
+from track.track import Track
 
 
 class TrackQueue:

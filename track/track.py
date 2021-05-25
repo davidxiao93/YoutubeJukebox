@@ -1,9 +1,10 @@
 from typing import Dict, Union, Optional
 
 from enums.download_status import DownloadStatus
+from track.track_info import TrackInfo
 
 
-class Track:
+class Track(TrackInfo):
     def __init__(self,
                  source_id: str,
                  title: str,
@@ -11,11 +12,7 @@ class Track:
                  thumbnail: str,
                  duration: int,
                  download_status: DownloadStatus):
-        self.source_id = source_id
-        self.title = title
-        self.artist = artist
-        self.thumbnail = thumbnail
-        self.duration = duration # in seconds
+        super().__init__(source_id, title, artist, thumbnail, duration)
 
         # The fields below are not kept in cache
         self.download_status = download_status

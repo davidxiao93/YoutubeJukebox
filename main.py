@@ -22,7 +22,7 @@ from flask_socketio import SocketIO
 from enums.download_status import DownloadStatus
 from players.VLCPlayer import VLCPlayer
 from sources.YoutubeSource import YoutubeSource
-from track_queue import TrackQueue
+from track.track_queue import TrackQueue
 
 
 async_mode = None
