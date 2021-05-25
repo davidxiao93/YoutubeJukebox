@@ -39,7 +39,7 @@ class VLCPlayer(Player):
                 "--start-time", str(start), # Start at a specific time
                 "--play-and-exit",          # Close process when finished
                 # TODO: do something to make sure that vlc volume is always 100%
-                "download/" + self.current_track.source_id + ".mp3"
+                "download/" + self.current_track.info.source_id + ".mp3"
             ])
         self.push_now_playing_state()
 

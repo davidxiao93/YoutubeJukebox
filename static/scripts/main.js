@@ -23,20 +23,20 @@ $(function(){
         },
         computed: {
             now_playing_thumbnail: function() {
-                if (this.now_playing?.current_track?.thumbnail_url) {
-                    return this.now_playing.current_track.thumbnail_url;
+                if (this.now_playing?.current_track?.info?.thumbnail_url) {
+                    return this.now_playing.current_track.info.thumbnail_url;
                 }
                 return "static/images/artwork-not-found.png";
             },
             now_playing_title: function() {
-                if (this.now_playing?.current_track?.title) {
-                    return this.now_playing.current_track.title;
+                if (this.now_playing?.current_track?.info?.title) {
+                    return this.now_playing.current_track.info.title;
                 }
                 return "--";
             },
             now_playing_artist: function() {
-                if (this.now_playing?.current_track?.artist) {
-                    return this.now_playing.current_track.artist;
+                if (this.now_playing?.current_track?.info?.artist) {
+                    return this.now_playing.current_track.info.artist;
                 }
                 return "--";
             },
@@ -47,8 +47,8 @@ $(function(){
                 return "--:--";
             },
             now_playing_duration: function() {
-                if (this.now_playing?.current_track?.duration) {
-                    return seconds_string(this.now_playing.current_track.duration);
+                if (this.now_playing?.current_track?.info?.duration) {
+                    return seconds_string(this.now_playing.current_track.info.duration);
                 }
                 return "--:--";
             },
@@ -56,8 +56,8 @@ $(function(){
                 return String(this.now_playing.volume).padStart(3, '0');
             },
             progress_bar_max: function() {
-                if (this.now_playing?.current_track?.duration) {
-                    return this.now_playing.current_track.duration;
+                if (this.now_playing?.current_track?.info?.duration) {
+                    return this.now_playing.current_track.info.duration;
                 }
                 return 1;
             }

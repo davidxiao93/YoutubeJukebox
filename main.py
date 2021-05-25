@@ -60,7 +60,7 @@ def background_download_thread():
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
-                    track.error = f"Failed to search for {track.source_id}, reason: {e}"
+                    track.error = f"Failed to search for {track.query}, reason: {e}"
                     track_queue.push_queue_state()
                     print(e)
                     break
@@ -69,12 +69,12 @@ def background_download_thread():
 
                 # Try to download the actual file now
                 try:
-                    cached = source.fetch_file(track.source_id)
+                    cached = source.fetch_file(track.info.source_id)
                     track.download_status = DownloadStatus.CAPTURED if cached else DownloadStatus.PROCESSING
                     track_queue.push_queue_state()
                 except Exception as e:
                     track.download_status = DownloadStatus.ERROR
-                    track.error = f"Failed to download for {track.title}, reason: {e}"
+                    track.error = f"Failed to download for {track.info.title}, reason: {e}"
                     track_queue.push_queue_state()
                     print(e)
                     break
@@ -87,7 +87,7 @@ def background_download_thread():
                         track_queue.push_queue_state()
                     except Exception as e:
                         track.download_status = DownloadStatus.ERROR
-                        track.error = f"Failed to download for {track.title}, reason: {e}"
+                        track.error = f"Failed to download for {track.info.title}, reason: {e}"
                         track_queue.push_queue_state()
                         print(e)
                         break

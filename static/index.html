@@ -110,7 +110,7 @@
                                 </div>
                                 <div>
                                     <span>Queued:</span>
-                                    <span class="mdl-list__item-text-body text-compress">{{ track.source_id }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.query }}</span>
                                 </div>
                             </div>
                         </section >
@@ -122,7 +122,7 @@
                                 </div>
                                 <div>
                                     <span>Searching:</span>
-                                    <span class="mdl-list__item-text-body text-compress">{{ track.source_id }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.query }}</span>
                                 </div>
                             </div>
                         </section>
@@ -134,7 +134,7 @@
                                 </div>
                                 <div>
                                     <span>Downloading:</span>
-                                    <span class="mdl-list__item-text-body text-compress">{{ track.title }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.info.title }}</span>
                                 </div>
                             </div>
                         </section>
@@ -146,17 +146,17 @@
                                 </div>
                                 <div>
                                     <span>Processing:</span>
-                                    <span class="mdl-list__item-text-body text-compress">{{ track.title }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.info.title }}</span>
                                 </div>
                             </div>
                         </section>
 
                         <section v-if="track.download_status === DOWNLOAD_STATUS.CAPTURED" class="flex-grow">
                             <div class="mdl-list__item-primary-content compress flex">
-                                <img :src="track.thumbnail_url" style='max-height:100px;max-width:100px;padding-right:16px'>
+                                <img :src="track.info.thumbnail_url" style='max-height:100px;max-width:100px;padding-right:16px'>
                                 <div>
-                                    <span>{{ track.title }}</span>
-                                    <span class="mdl-list__item-text-body text-compress">{{ track.artist }}</span>
+                                    <span>{{ track.info.title }}</span>
+                                    <span class="mdl-list__item-text-body text-compress">{{ track.info.artist }}</span>
                                 </div>
                             </div>
                         </section>

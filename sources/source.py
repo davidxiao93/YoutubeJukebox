@@ -6,13 +6,11 @@ from eventlet import tpool
 from expiringdict import ExpiringDict
 from flask_socketio import SocketIO
 
-from enums.download_status import DownloadStatus
 from track.track import Track
 
 import ffmpeg
 
 from track.track_info import TrackInfo
-from track.track_utils import track_info_to_track, track_to_track_info
 
 
 class Source:
@@ -22,22 +20,15 @@ class Source:
         self.search_cache: Dict[str, TrackInfo] = ExpiringDict(max_len=1_000, max_age_seconds=24*60*60)
 
     def build_track(self, query: str) -> Track:
-        return Track(
-            source_id=query,
-            title="",
-            artist="",
-            thumbnail="",
-            duration=0,
-            download_status=DownloadStatus.QUEUED
-        )
+        return Track(query)
 
-    def check_cache(self, query: str) -> Optional[Track]:
+    def check_cache(self, query: str) -> Optional[TrackInfo]:
         if query not in self.search_cache:
             return None
-        return track_info_to_track(self.search_cache[query])
+        return self.search_cache[query]
 
     def add_to_cache(self, query: str, track: Track):
-        self.search_cache[query] = track_to_track_info(track)
+        self.search_cache[query] = track.info
 
     def fetch_meta(self, query: str) -> Track:
         """
@@ -88,7 +79,7 @@ class Source:
         # Reverse the audio
         input_audio = ffmpeg.filter(input_audio, "areverse")
 
-        output_ffmpeg = ffmpeg.output(input_audio, filename=f"download/{track.source_id}.mp3")
+        output_ffmpeg = ffmpeg.output(input_audio, filename=f"download/{track.info.source_id}.mp3")
         output_ffmpeg = ffmpeg.overwrite_output(output_ffmpeg) # overwrite if needed
 
 

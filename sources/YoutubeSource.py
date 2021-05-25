@@ -4,15 +4,14 @@ from pathlib import Path
 import youtube_dl
 from youtubesearchpython import VideosSearch
 
-
 from flask_socketio import SocketIO
 
-from enums.download_status import DownloadStatus
 from sources.source import Source
 from track.track import Track
 
 from functools import reduce
 
+from track.track_info import TrackInfo
 
 
 class YoutubeSource(Source):
@@ -21,16 +20,11 @@ class YoutubeSource(Source):
         super().__init__(socketio)
 
     def fetch_meta(self, track: Track) -> Track:
-        query = track.source_id
+        query = track.query
 
-        maybe_track = self.check_cache(query)
-        if maybe_track is not None:
-            track.source_id = maybe_track.source_id
-            track.title = maybe_track.title
-            track.artist = maybe_track.artist
-            track.thumbnail = maybe_track.thumbnail
-            track.duration = maybe_track.duration
-            track.download_status = DownloadStatus.DOWNLOADING
+        maybe_track_info = self.check_cache(query)
+        if maybe_track_info is not None:
+            track.info = maybe_track_info
             return track
 
         youtube_search = VideosSearch(query, limit=1)
@@ -39,20 +33,21 @@ class YoutubeSource(Source):
             raise Exception("No results")
         result = results[0]
         if isinstance(result, dict):
-            track.source_id = "youtube_" + result["id"]
-            track.title = result["title"]
-            track.artist = result["channel"]["name"]
-            track.thumbnail = max(result["thumbnails"], key=lambda t: t["width"] * t["height"])["url"]
-            track.duration = reduce(
-                lambda a, b: 60 * a + b,
-                [int(x) for x in result["duration"].split(":")],
-                0
+            track_info = TrackInfo(
+                source_id="youtube_" + result["id"],
+                title=result["title"],
+                artist=result["channel"]["name"],
+                thumbnail=max(result["thumbnails"], key=lambda t: t["width"] * t["height"])["url"],
+                duration=reduce(
+                    lambda a, b: 60 * a + b,
+                    [int(x) for x in result["duration"].split(":")],
+                    0
+                )
             )
-            track.download_status = DownloadStatus.DOWNLOADING
+            track.info = track_info
             self.add_to_cache(query, track)
             return track
         raise Exception("Failed to search")
-
 
     def fetch_file(self, source_id: str) -> bool:
         """
@@ -82,4 +77,3 @@ class YoutubeSource(Source):
             ydl.download(['https://www.youtube.com/watch?v=' + youtube_id])
 
         return False
-
